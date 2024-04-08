@@ -21,14 +21,6 @@ public class SkelbiuTest {
         return wait.until(ExpectedConditions.presenceOfElementLocated(by));
     }
 
-    public WebElement snoozeUntilClickable(By by) {
-        WebElement element = snoozeUntilPresence(by);
-        WebDriverWait wait = new WebDriverWait(_globalDriver, Duration.ofSeconds(30));
-
-        element = wait.until(ExpectedConditions.elementToBeClickable(by));
-        return element;
-    }
-
     @BeforeTest
     public void setupWebDriver() {
         ChromeOptions options = new ChromeOptions();
@@ -67,6 +59,34 @@ public class SkelbiuTest {
 
     @Test // 1 page of ads (not skelbiu, but autoplius)
     public void test2() {
+        _globalDriver.get("https://www.skelbiu.lt/skelbimai/1?keywords=samotines+plytos");
+        _globalDriver.findElement(By.id("onetrust-reject-all-handler")).click();
 
+        snoozeUntilPresence(By.xpath("//*[@id=\"body-container\"]/div[2]/div[1]/ul/li/span"));
+        String totalAds = _globalDriver.findElement(By.xpath("//*[@id=\"body-container\"]/div[2]/div[1]/ul/li/span")).getText();
+        String numericPart = totalAds.replaceAll("[^\\d]", "");
+        int numberOfAds = Integer.parseInt(numericPart);
+        int adCounter = 0;
+
+        for (int i = 0; i < 30; i++) {
+            try {
+                _globalDriver.findElement(By.xpath("//*[@id=\"items-list-container\"]/div[2]/div[" + i + "]")).click();
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                String adID = _globalDriver.findElement(By.xpath("//*[@id=\"contentArea\"]/div[6]/div[1]/div[1]/div[4]/div[1]")).getText();
+                System.out.println(adID);
+                if (adID.contains("ID")) {
+                    adCounter++;
+                    System.out.println(adID);
+                }
+                _globalDriver.get("https://www.skelbiu.lt/skelbimai/1?keywords=samotines+plytos");
+            } catch (NoSuchElementException e) {
+            }
+        }
+        System.out.println("Number of ads: " + adCounter);
     }
 }
