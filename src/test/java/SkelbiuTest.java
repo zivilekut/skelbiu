@@ -10,6 +10,7 @@ import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 import java.time.Duration;
+import java.util.Set;
 
 public class SkelbiuTest {
     ChromeDriver _globalDriver;
@@ -50,14 +51,22 @@ public class SkelbiuTest {
         int adCounter = 0;
         for (int i = 1; i < 10; i++) {
             try {
-                _globalDriver.findElement(By.xpath("//*[@id=\"items-list-container\"]/div[2]/div[" + i + "]"));
+                _globalDriver.findElement(By.xpath("//*[@id=\"items-list-container\"]/div[2]/div[" + i + "]")).click();
                 adCounter++;
             } catch (NoSuchElementException e) {
             }
         }
         Assert.assertEquals(adCounter, numberOfAds);
 
+        Set<String> windowHandlesAfterClick = _globalDriver.getWindowHandles(); // Get all window handles after clicking the link
+        int autopliusWindowsOpened = windowHandlesAfterClick.size() - 1;
+        System.out.println("Autoplius langų: " + autopliusWindowsOpened);
+
         _globalDriver.quit();
     }
 
+    @Test // 1 page of ads (not skelbiu, but autoplius)
+    public void test2() {
+
+    }
 }
