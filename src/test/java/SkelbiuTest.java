@@ -57,7 +57,7 @@ public class SkelbiuTest {
         _globalDriver.quit();
     }
 
-    @Test // 1 page of ads (not skelbiu, but autoplius)
+    @Test // 2 pages of ads
     public void test2() {
         _globalDriver.get("https://www.skelbiu.lt/skelbimai/1?keywords=samotines+plytos");
         _globalDriver.findElement(By.id("onetrust-reject-all-handler")).click();
@@ -68,25 +68,34 @@ public class SkelbiuTest {
         int numberOfAds = Integer.parseInt(numericPart);
         int adCounter = 0;
 
-        for (int i = 0; i < 30; i++) {
-            try {
-                _globalDriver.findElement(By.xpath("//*[@id=\"items-list-container\"]/div[2]/div[" + i + "]")).click();
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+        for (int i = 1; i < 201; i++) {
 
-                String adID = _globalDriver.findElement(By.xpath("//*[@id=\"contentArea\"]/div[6]/div[1]/div[1]/div[4]/div[1]")).getText();
-                System.out.println(adID);
-                if (adID.contains("ID")) {
-                    adCounter++;
-                    System.out.println(adID);
+            String url = "https://www.skelbiu.lt/skelbimai/" + i + "?keywords=samotines+plytos";
+            _globalDriver.get(url);
+            if (!_globalDriver.getCurrentUrl().equals(url)) {
+                break; // Exit the loop since we've reached the last page
+            }
+
+            for (int y = 1; y <= 27; y++) {
+                try {
+                    _globalDriver.findElement(By.xpath("(//*[@id='items-list-container']/div[" + (i + 1) + "]/div)[" + y + "]")).click();
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    String adID = _globalDriver.findElement(By.cssSelector("#contentArea > div.main-item-container > div.itemscope > div.left-content > div.actions-container > div.block.id")).getText();
+                    if (adID.contains("ID")) {
+                        adCounter++;
+                        System.out.println(adID);
+                    }
+                    _globalDriver.get("https://www.skelbiu.lt/skelbimai/" + i + "?keywords=samotines+plytos");
+                } catch (NoSuchElementException e) {
                 }
-                _globalDriver.get("https://www.skelbiu.lt/skelbimai/1?keywords=samotines+plytos");
-            } catch (NoSuchElementException e) {
             }
         }
         System.out.println("Number of ads: " + adCounter);
+        Assert.assertEquals(adCounter, numberOfAds);
+        _globalDriver.quit();
     }
 }
