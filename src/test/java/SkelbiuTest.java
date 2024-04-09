@@ -150,7 +150,11 @@ public class SkelbiuTest {
 
     @Test // search with no results
     public void test4() {
-        _globalDriver.get("https://www.skelbiu.lt/skelbimai/1?keywords=samotines+plytos");
+        _globalDriver.get("https://www.skelbiu.lt/skelbimai/1?keywords=drakono+kiausinis&category_id=2");
         _globalDriver.findElement(By.id("onetrust-reject-all-handler")).click();
+
+        WebElement limitText = _globalDriver.findElement(By.id("NotFoundHeader"));
+        Assert.assertEquals(limitText.getText(), "Nemalonu pranešti, bet nieko neradome :-(");
+        _globalDriver.quit();
     }
 }
